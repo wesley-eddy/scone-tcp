@@ -26,13 +26,15 @@ author:
     ins: M. Joras
     name: Matt Joras
     organization: Meta
-    email: mjoras@meta.com
+    email: matt.joras@gmail.com
 
 normative:
   RFC9293:
 
 informative:
+  RFC9000:
   I-D.joras-scone-video-optimization-requirements:
+  I-D.ietf-scone-protocol:
 
 --- abstract
 
@@ -44,7 +46,17 @@ TCP is analogous to SCONE packets within the QUIC protocol.
 
 # SCONE Background and Introduction
 
-TODO {{I-D.joras-scone-video-optimization-requirements}},
+Standard Communication with Network Elements (SCONE)
+{{I-D.ietf-scone-protocol}} is an extension to QUIC {{RFC9000}} that provides
+the capability for network elements to provide QUIC application endpoints with
+guidance on potential permitted throughput, e.g. in order to make explicit the
+presence of traffic limiting mechanisms within the network that can be
+problematic for video streaming
+{{I-D.joras-scone-video-optimization-requirements}} and other applications.
+
+In QUIC, SCONE is negotiated between endpoints using a transport parameter, and
+the QUIC endpoints send SCONE packets periodically.  The SCONE packets are
+visible to network elements that modify the throughput guidance within them.
 
 # Conventions and Definitions
 
@@ -52,11 +64,22 @@ TODO {{I-D.joras-scone-video-optimization-requirements}},
 
 # TCP Option for SCONE
 
-TODO
+This document defines a TCP {{RFC9293}} option to provide analogous SCONE
+functionality for TCP.  This could be viewed as similar to the way that TCP MSS
+clamping works traditionally, with the TCP MSS options included by endpoints
+being inspected and modified en-route by elements on the network path that can
+provide more pertinent guidance.
 
 ## Option Format
 
-TODO picture
+~~~ aasvg
++------------+------------+-------------------------+
+| Kind = TBD | Length = 4 |    Throughput Guidance  |
++------------+------------+-------------------------+
+~~~
+
+TODO: Explain the throughput guidance values used, which should include the present QUIC values.
+
 
 TODO note assumed interaction with other options, namely TCP-AO.
 
@@ -84,11 +107,13 @@ TODO: describe informationally a possible socket option to get SCONE info
 
 # Security Considerations
 
-TODO
+The security considerations for SCONE-TCP are similar to those for SCONE as
+present in QUIC, however, some differences arise because TCP security lacks the
+same cryptographic methods that are present in QUIC.
 
 # IANA Considerations
 
-TODO: TCP option kind value
+TODO: TCP option kind value is TBD.
 
 --- back
 
