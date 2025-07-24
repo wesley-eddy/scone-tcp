@@ -136,7 +136,17 @@ inference, and retransmission behavior.
 
 ### Network-Initiated
 
-TODO: generate a pure ACK (no data) matching last observed sequence and ack values.  This is okay because it proves the device has credible threat of network violence, as assumed by SCONE.
+An on-path network element aware of the live TCP flow MAY generate a pure ACK
+matching the last observed sequence and acknowledgement values sent to the same
+endpoint, that includes the SCONE-TCP option with new or updated throughput
+advice, if changed from the last value that it has sent.
+
+In general, network devices are highly discouraged from generating TCP segments
+to the endpoints of connections passing through them.  This can be viewed as a
+type of attack, and could be prevented by use of methods like IPsec, TCP-AO, or
+by other means between the end hosts.  However, in the cases of applications
+that SCONE serves, these network devices are on-path and may drop, delay, or
+otherwise manipulate the packet stream.
 
 # API for TCP Applications
 
