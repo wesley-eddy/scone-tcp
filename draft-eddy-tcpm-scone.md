@@ -32,6 +32,8 @@ normative:
   RFC9293:
 
 informative:
+  RFC2385:
+  RFC5925:
   RFC9000:
   I-D.joras-scone-video-optimization-requirements:
   I-D.ietf-scone-protocol:
@@ -83,9 +85,21 @@ provide more pertinent guidance.
 The TCP option kind value (TBD) indicates the SCONE-TCP option.  The length
 value of 4 is always used, along with a two byte throughput guidance.
 
-TODO: Explain the throughput guidance values used, which could be based on the QUIC values.  Since QUIC is using two packet types, each with 6 bits of signal, only 7 of the 16 bits here need to be used, and the upper 9 bits can be reserved for future use..
+The Throughput Guidance field is 16 bits and takes values based on the QUIC
+SCONE packet definitions of the "Rate Signal High Bits"
+{{I-D.ietf-scone-protocol}} (Section on "Rate Signals").  Only the lowest 7
+bits of Throughput Guidance are currently used, and the highest 9 bits are
+zeroed.  These may be used in a future extension, and should be ignored by
+implementations based on this current specification.
 
-TODO: note assumed interaction with other options, namely TCP-AO.
+A rate limit is computed from the value of these 7 bits interpreted as an
+unsigned integer "n" ranging from 0 to 126, within the formula below.
+
+~~~ aasvg
+
+    rate limit = 100 kbps + 10^(n/20) kbps
+
+~~~
 
 ## Use During Handshake
 
@@ -130,9 +144,25 @@ inference, and retransmission behavior.
 
 # API for TCP Applications
 
-TODO: describe informationally a possible socket option to request SCONE use.
+SCONE provides a signal to applications that can be used, for instance, to
+select proper media from manifests listing different available bitrates (e.g.
+at different resolutions, etc.) for video data.  To that extent, it is
+important for the SCONE signal information to be made available to TCP
+applications.  Relevant application programming interface (API) details are
+left to TCP implementations, though this section provides the outline of
+expected capabilities.
 
-TODO: describe informationally a possible socket option to get SCONE info.
+Since not all applications would be interested in SCONE throughput advice, the
+option might only be enabled for negotiation by specific application request.
+In that case, a TCP implementation supporting the typical "socket" API might
+define arguments for the "setsockopt" call to request SCONE use.
+
+Similarly, the "getsockopt" call might be used in order to supply any received
+SCONE thoughput guidance back to the application.  In some use cases, this may
+only need to happen once, early in the connection (e.g. after receiving a video
+manifest), while in other cases, an application may need to periodically poll
+the advice using getsockopt calls to sense if the advice may have changed over
+time.
 
 # Security Considerations
 
@@ -140,9 +170,26 @@ The security considerations for SCONE-TCP are similar to those for SCONE as
 present in QUIC, however, some differences arise because TCP security lacks the
 same cryptographic methods that are present in QUIC.
 
+Middleboxes making changes to TCP headers (and options such as SCONE-TCP) might
+be considered as an attack, or used as part of an attack, although in general
+this is already common due to NAT, MSS clamping, and other network features.
+
+TCP headers can be protected by TCP-MD5 {{RFC2385}}, which is a legacy obsolete
+option, that does not cover the TCP options, so is compatible with the use of
+SCONE-TCP and the modification of SCONE-TCP options by middleboxes.
+
+TCP-AO {{RFC5925}} replaces TCP-MD5 and can be configured to protect TCP
+options, or to leave TCP options uncovered by its MAC.  If TCP-AO is used and
+configured to protect TCP options, then SCONE-TCP SHOULD NOT be used, as any
+modifications of it would cause segments to be rejected.
+
 # IANA Considerations
 
-TODO: TCP option kind value is TBD.
+If this document is approved for Standards Track, a TCP option kind value should be allocated.
+
+In early use, a TCP experimental option kind value can be used, with suggested
+ExID value 0x6f7d (to be registered with IANA).  This matches 15 bits of both
+of the QUIC version numbers used for SCONE.
 
 --- back
 
