@@ -20,8 +20,8 @@ author:
   -
     ins: W. Eddy
     name: Wesley Eddy
-    organization: Meta
-    email: wesleyeddy@meta.com
+    organization: Aalyria
+    email: wes@aalyria.com
   -
     ins: M. Joras
     name: Matt Joras
@@ -187,8 +187,8 @@ modifications of it would cause segments to be rejected.
 
 If this document is approved for Standards Track, a TCP option kind value should be allocated.
 
-In early use, a TCP experimental option kind value can be used, with suggested
-ExID value 0x6f7d (to be registered with IANA).  This matches 15 bits of both
+In early use, a TCP experimental option kind value can be used, with the
+ExID value 0x6f7d that has been registered with IANA.  This matches 15 bits of both
 of the QUIC version numbers used for SCONE.
 
 --- back
@@ -201,3 +201,5 @@ This document represents collaboration and inputs from others, including:
 - Alan Frindell
 - Bryan Tan
 - Anoop Tomar
+
+Wesley Eddy's original work on this was supported while a contractor of Meta.
