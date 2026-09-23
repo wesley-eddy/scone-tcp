@@ -1,7 +1,7 @@
 ---
 title: "SCONE TCP Option"
 abbrev: "SCONE for TCP"
-docname: draft-eddy-tcpm-scone-01
+docname: draft-eddy-tcpm-scone-02
 category: std
 
 ipr: trust200902
